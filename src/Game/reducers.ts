@@ -54,7 +54,6 @@ export const gameReducer = (prev: IGameState, action): IGameState => {
 		case 'wrongInput':
 			return { ...prev, error: `wrong input only 1-9 digit or 'u' are acceptable` };
 		case 'reset':
-			console.log(`reset ${JSON.stringify(prev)}`);
 			const board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 			const player1 = prev.player1;
 			const player2 = prev.player2;
