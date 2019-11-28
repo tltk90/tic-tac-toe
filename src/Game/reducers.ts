@@ -28,27 +28,29 @@ export const gameReducer = (prev: IGameState, action): IGameState => {
 			const player2 = { ...prev.player2 };
 			const currentPlayer = prev.currentPlayer;
 			const board = [...prev.board];
-			let error = ''
-			if (currentPlayer === 'player1' && player1.timeLeft > 0) {
-				player1.timeLeft--;
-			} else if (currentPlayer === 'player2' && player2.timeLeft > 0) {
-				player2.timeLeft--;
+			const player1lastKey = player1.last.pop();
+			const player2lastKey = player2.last.pop();
+			let error = '';
+			if (player1lastKey === undefined || player2lastKey === undefined) {
+				error = 'unable to undo no full move was reached'
 			} else {
-				error = 'you already undo more than 3 times'
-			}
-			if (!error.length) {
-				const player1lastKey = player1.last.pop();
-				const player2lastKey = player2.last.pop();
-				if(player1lastKey === undefined && player2lastKey === undefined) {
-					error = "unable to undo no full move was reached"
+				if (currentPlayer === 'player1' && player1.timeLeft > 0) {
+					player1.timeLeft--;
+				} else if (currentPlayer === 'player2' && player2.timeLeft > 0) {
+					player2.timeLeft--;
+				} else {
+					error = 'you already undo more than 3 times'
+					player1.last.push(player1lastKey);
+					player2.last.push(player2lastKey);
 				}
-				else {
+				if (!error.length) {
 					const player1boardLocation = KeyToBoardMapper(player1lastKey);
 					const player2boardLocation = KeyToBoardMapper(player2lastKey);
 					board[player1boardLocation] = parseInt(player1lastKey);
 					board[player2boardLocation] = parseInt(player2lastKey);
 				}
 			}
+
 			return { ...prev, player1, player2, board, error }
 		}
 		case 'wrongInput':
@@ -70,7 +72,7 @@ export const gameReducer = (prev: IGameState, action): IGameState => {
 				case 'player1':
 					const player1 = { ...prev.player1 };
 					player1.win++;
-					return { ...prev, round, error: 'Player1 win this game', player1  };
+					return { ...prev, round, error: 'Player1 win this game', player1 };
 				case 'player2':
 					const player2 = { ...prev.player2 };
 					player2.win++;
